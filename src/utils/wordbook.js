@@ -4,35 +4,33 @@
  * 对象 用于 表格内容过滤
  */
 
-//证件类型
-export const DOCUMENTTYPE = {
-  "1": "身份证",
-  "2": "护照",
-  "3": "通行证",
-  "4": "外国人居留证",
-  "5": "外国人入境证"
+//用户状态
+export const USERSTATUS = {
+  "0": "正常",
+  "1": "停用"
 };
-
-export const DOCUMENTTYPELIST = [
+export const USERSTATUSLIST = [
+  {
+    id: 0,
+    value: "正常"
+  },
   {
     id: 1,
-    value: "身份证"
+    value: "停用"
+  }
+];
+// 处理状态
+export const PROCESSSTATUS = {
+  "1": "已处理",
+  "2": "未处理"
+};
+export const PROCESSSTATUSLIST = [
+  {
+    id: 1,
+    value: "已处理"
   },
   {
     id: 2,
-    value: "护照"
-  },
-  {
-    id: 3,
-    value: "通行证"
-  },
-  {
-    id: 4,
-    value: "外国人居留证"
-  },
-  {
-    id: 5,
-    value: "外国人入境证"
+    value: "未处理"
   }
 ];
-

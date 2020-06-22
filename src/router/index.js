@@ -1,11 +1,25 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
+import Router from "vue-router";
 import store from "@/store";
+// import { Message } from "element-ui";
+// import Cookie from "@u/cookie";
+Vue.use(Router);
+
 import Layout from "@/layout";
+import getTitle from "@u/getTitle";
 
-Vue.use(VueRouter);
+/**
+ * 路由相关属性说明
+ * hidden: 当设置hidden为true时，意思不在sideBars侧边栏中显示
+ * mete{
+ * title: xxx,  设置sideBars侧边栏名称
+ * icon: xxx,  设置ideBars侧边栏图标
+ * noCache: true  当设置为true时不缓存该路由页面
+ * }
+ */
 
-const routes = [
+/*通用routers*/
+export const currencyRoutes = [
   {
     path: "/login",
     name: "Login",
@@ -19,157 +33,207 @@ const routes = [
     component: () => import("@v/error-page/404.vue"),
     hidden: true
   },
-  
   {
     path: "/",
-    name: "home",
-    value:"首页",
+    name: "Home",
     component: Layout,
     redirect: "/dashbord",
     children: [
       {
         path: "dashbord",
-        name: "dashbord",
-        component: () => import("@v/dashboard/index.vue"),
-        meta: { title: "首页", icon: "el-icon-s-home" }
+        name: "Dashbord",
+        component: () => import("@v/dashboard"),
+        meta: { title: "首页", icon: "el-icon-s-data" }
+      }
+    ]
+  },
+  {
+    path: "/personal",
+    name: "Personal",
+    component: Layout,
+    redirect: "/personal/index",
+    hidden: true,
+    children: [
+      {
+        path: "index",
+        name: "Personal-index",
+        component: () => import("@v/personal"),
+        meta: { title: "个人中心" }
       }
     ]
   }
 ];
-
-
 /*动态添加routers*/
 export const asyncRoutes = [
   {
-    path: "/productManage",
-    name: "productManageParent",
+    path: "/permission",
+    name: "Permission",
     component: Layout,
-    value:"产品管理",
-    redirect: "/productManage",
-    
+    redirect: "/permission/page-use",
+    meta: {
+      title: "权限",
+      icon: "el-icon-lock"
+    },
     children: [
       {
-        path: "productManage",
-        name: "productManage",
-        value: "产品管理",
-        component: () => import("@v/productManager/productManager/index.vue"),
-        meta: { title: "产品管理" , icon: "el-icon-s-custom"}
+        path: "page-user",
+        name: "PageUser",
+        component: () => import("@v/permission/page-user"),
+        meta: { title: "用户页面", icon: "el-icon-user" }
+      },
+      {
+        path: "roles",
+        name: "Roles",
+        component: () => import("@v/permission/roles"),
+        meta: { title: "权限设置", icon: "el-icon-s-tools" }
       }
     ]
   },
   {
-    path: "/orderManage",
-    name: "orderManageParent",
-    value: "订单管理",
+    path: "/table",
+    name: "Table",
+    redirect: "/table/base-table",
     component: Layout,
-    redirect: "/orderManage",
+    meta: {
+      title: "表格",
+      icon: "el-icon-table iconfont"
+    },
     children: [
       {
-        path: "orderManage",
-        name: "orderManage",
-        value: "订单管理",
-        component: () => import("@v/orderManage"),
-        meta: { title: "订单管理" }
+        path: "base-table",
+        name: "BaseTable",
+        component: () => import("@v/table/common-table"),
+        meta: { title: "普通表格" }
+      },
+      {
+        path: "complex-table",
+        name: "ComplexTable",
+        component: () => import("@v/table/complex-table"),
+        meta: { title: "复杂表格" }
       }
     ]
   },
   {
-    path: "/reportManage",
-    name: "reportManageParent",
-    value: "报告管理",
+    path: "/components",
     component: Layout,
-    redirect: "/reportManage",
+    name: "Components",
+    redirect: "/components/slide-yz",
+    meta: { icon: "el-icon-coin", title: "组件" },
     children: [
       {
-        path: "reportManage",
-        name: "reportManage",
-        value: "报告管理",
-        component: () => import("@v/reportManage"),
-        meta: { title: "报告管理" }
+        path: "upload",
+        name: "Upload",
+        component: () => import("@v/components/pushImg"),
+        meta: { icon: "el-icon-upload", title: "上传图片" }
       }
     ]
   },
   {
-    path: "/notification",
-    name: "notificationParent",
-    value: "消息通知",
+    path: "/echarts",
     component: Layout,
-    redirect: "/notification",
+    name: "Echarts",
+    redirect: "/echarts/slide-chart",
+    meta: { icon: "el-icon-s-marketing", title: "Echarts" },
     children: [
       {
-        path: "notification",
-        name: "notification",
-        value: "消息通知",
-        component: () => import("@v/reportManage"),
-        meta: { title: "消息通知" }
+        path: "slide-chart",
+        name: "Sldie-chart",
+        component: () => import("@v/echarts/slide-chart"),
+        meta: { title: "滑动charts" }
+      },
+      {
+        path: "dynamic-chart",
+        name: "Dynamic-chart",
+        component: () => import("@v/echarts/dynamic-chart"),
+        meta: { title: "切换charts" }
       }
     ]
   },
   {
-    path: "/userManager",
-    name: "userManagerParent",
-    value: "用户管理",
+    path: "/excel",
     component: Layout,
-    redirect: "/userManager",
+    name: "Excel",
+    redirect: "/excel-operate/excel-out",
+    meta: { icon: "el-icon-excel iconfont", title: "Excel" },
     children: [
       {
-        path: "userManager",
-        name: "userManager",
-        value: "用户管理",
-        component: () => import("@v/userManager"),
-        meta: { title: "用户管理" }
+        path: "excel-out",
+        name: "Excel-out",
+        component: () => import("@v/excel-operate/excel-out"),
+        meta: { title: "Excel导出" }
+      },
+      {
+        path: "excel-in",
+        name: "Excel-in",
+        component: () => import("@v/excel-operate/excel-in"),
+        meta: { title: "Excel导入" }
       }
     ]
   },
   {
-    path: "/advertManager",
-    name: "advertManagerParent",
-    value: "广告管理",
+    path: "/error",
     component: Layout,
-    redirect: "/advertManager",
+    name: "error",
+    redirect: "/error/404",
+    meta: {
+      title: "其他",
+      icon: "el-icon-table iconfont"
+    },
     children: [
       {
-        path: "advertManager",
-        name: "advertManager",
-        value: "广告管理",
-        component: () => import("@v/advertManager"),
-        meta: { title: "广告管理" }
-      }
-    ]
-  },
-  {
-    path: "/accountManager",
-    name: "accountManagerParent",
-    value: "管理账号管理",
-    component: Layout,
-    redirect: "/accountManager",
-    children: [
-      {
-        path: "accountManager",
-        name: "accountManager",
-        value: "管理账号管理",
-        component: () => import("@v/accountManager"),
-        meta: { title: "管理账号管理" }
+        path: "404",
+        name: "Page404",
+        component: () => import("@v/error-page/404"),
+        meta: { title: "404", icon: "el-icon-s-release" }
       }
     ]
   }
-]
-
-
-const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
-  routes
-});
-
+];
+const creatRouter = () => {
+  return new Router({
+    routes: currencyRoutes,
+    scrollBehavior() {
+      return { x: 0, y: 0 };
+    }
+  });
+};
+const router = creatRouter();
+// 解决addRoute不能删除动态路由问题
+export function resetRouter() {
+  const reset = creatRouter();
+  router.matcher = reset.matcher;
+}
 
 // 导航守卫
 router.beforeEach(async (to, from, next) => {
-  store.commit('SET_ROUTES',asyncRoutes)
-  if(to.path== "/login"){
-    next()
-  }else{
+  document.title = getTitle(to.meta.title);
+  if (to.path === "/login") {
     next();
+  } else {
+    if (store.getters.token) {
+      const hasRoles = store.getters.addRoutes.length > 0;
+      if (hasRoles || store.getters.isFindRouter) {
+        next();
+      } else {
+        var roles = [];
+        const addRoutes = await store.dispatch(
+          "permission/getAsyncRoutes",
+          roles
+        );
+        // window.console.log(addRoutes);
+        router.addRoutes(addRoutes);
+        // hack method to ensure that addRoutes is complete
+        // set the replace: true, so the navigation will not leave a history record
+        next({ ...to, replace: true });
+      }
+    } else {
+      next({
+        path: "/login",
+        query: {
+          redirect: to.fullPath
+        }
+      });
+    }
   }
 });
 

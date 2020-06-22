@@ -5,7 +5,7 @@
   <el-form :inline="true" :model="searchData" ref="searchData" size="mini">
     <template v-for="(item, index) in searchItem">
       <el-form-item
-        v-if="(item.type === 'input' || '') && item.documentType != 1"
+        v-if="item.type === 'input' || ''"
         :label="item.label"
         :key="item.prop"
         :prop="item.prop"
@@ -44,6 +44,7 @@
       >
         <el-date-picker
           type="date"
+          :picker-options="pickerOptions"
           :format="item.timeFormat"
           :value-format="item.timeFormat"
           placeholder="选择日期"
@@ -59,6 +60,7 @@
         <el-form-item :prop="item.timeList[0]">
           <el-date-picker
             type="date"
+            :picker-options="pickerOptions0"
             :format="item.timeFormat"
             :value-format="item.timeFormat"
             placeholder="开始日期"
@@ -71,6 +73,7 @@
         <el-form-item :prop="item.timeList[1]">
           <el-date-picker
             type="date"
+            :picker-options="pickerOptions1"
             :format="item.timeFormat"
             :value-format="item.timeFormat"
             placeholder="结束日期"
@@ -111,7 +114,7 @@ export default {
           return time.getTime() > Date.now();
         }
       },
-      // 第一个日期限制第二个日期切限制不能未来时间
+      // 第一个日期限制第二个日期
       pickerOptions0: {
         disabledDate: time => {
           if (this.value2 != "" && this.value2 != null) {
@@ -141,8 +144,7 @@ export default {
       return this.$parent[fn](row);
     },
     handleSearch() {
-      // this.$parent.getDataList(this.searchData);
-      this.$emit("getDataList", this.searchData);
+      this.$parent.getDataList(this.searchData);
     },
     handleReset(formName) {
       this.$refs[formName].resetFields();

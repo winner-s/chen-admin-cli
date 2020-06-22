@@ -18,9 +18,10 @@ module.exports = {
     config.optimization.runtimeChunk("single");
   },
   devServer: {
-    // host: "localhost",
+    host: "localhost",
     /* 本地ip地址 */
-    host: "192.168.1.114",
+    // host: "192.168.1.109",
+    host: "0.0.0.0", //局域网和本地访问
     port: "8080",
     hot: true,
     /* 自动打开浏览器 */
@@ -33,8 +34,8 @@ module.exports = {
     proxy: {
       "/api": {
         /* 目标代理服务器地址 */
-        // target: "http://m260048y71.zicp.vip", //曾文
-        target: " http://192.168.1.107:8888", //麻益祥的ip   http://192.168.1.118:8888  曾文ip   192.168.1.103
+        target:
+          "https://www.fastmock.site/mock/8d1cd4026afe8d2c2b2af85fdd719ab2/admin",
         /* 允许跨域 */
         changeOrigin: true,
         ws: true,

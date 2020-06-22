@@ -10,7 +10,6 @@
         mode="vertical"
         :collapse-transition="false"
         :collapse="opened"
-        unique-opened
       >
         <sidebar-item
           v-for="item in routes"
@@ -39,8 +38,3 @@ export default {
   }
 };
 </script>
-<style>
-.el-submenu .el-menu-item {
-  padding-left: 50px !important;
-}
-</style>

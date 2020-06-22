@@ -33,7 +33,7 @@ import PageLink from "./Link";
 import { isAbsolutePath } from "@/utils/validate";
 import path from "path";
 // 定义全局变量防止出现for内渲染死循环
-var childItem = null;
+var childItem = null
 export default {
   name: "SidebarItem",
   props: {

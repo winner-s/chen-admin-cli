@@ -1,7 +1,5 @@
 import axios from "axios";
-import store from "@/store";
-import "babel-polyfill";
-import Cookie from "@u/cookie";
+// import store from '@/store'
 import router from "../router";
 import { Loading } from "element-ui"; //引用element-ui的加载提示组件
 
@@ -10,7 +8,7 @@ function startLoading() {
   loading = Loading.service({
     lock: true,
     text: "努力加载中……",
-    background: "rgba(0, 0, 0, 0)"
+    background: "rgba(0, 0, 0, 0.1)"
   });
 }
 
@@ -53,25 +51,12 @@ axios.interceptors.request.use(
         'Content-Type': 'application/json'
       }
     }
-    // 设置token 
-    // // 非登录需要token
-    // if( !config.url == process.env.VUE_APP_URL+'/adminsystem/login'){
-    //   if(Cookie.get("token")){
-    //     window.console.log(config)
-    //     if(config.method == "post"){
-    //       config.data.token = Cookie.get("token")
-    //     }else if(config.method == "get"){
-    //      window.console.log(1233)
-    //     }
-    //   }else{
-    //     router.push({ name: "login" });
-    //   }
-    // }
     // 判断ie加时间戳防止不请求接口
     if (window.ActiveXObject || 'ActiveXObject' in window) {
       config.url = `${config.url}?time=${new Date().getTime()}`
     }
     showFullScreenLoading()
+
     return config
   },
   err => {
@@ -81,16 +66,6 @@ axios.interceptors.request.use(
 // http response 拦截器
 axios.interceptors.response.use(
   response => {
-    // 访问接口后保存token信息
-    window.console.log(response)
-    if (response.headers.token) {
-      //  Cookie.set("token", response.headers.token);
-      store.dispatch("user/setToken", response.headers.token);
-    }
-    // 验证码 
-    if (response.headers.verificatiocode) {
-      Cookie.set("verificatiocode", response.headers.verificatiocode);
-    }
     tryHideFullScreenLoading()
     return response
   },
@@ -100,41 +75,22 @@ axios.interceptors.response.use(
   }
 )
 
-
-
-
-
-
-
 /**
  * 封装upload方法
  * @param url
  * @param params
  * @returns {Promise}
  */
-export function upload(url, data = {}) {
+export function upload (url, data={}) {
   return new Promise((resolve, reject) => {
-    if (Cookie.get("token")) {
-      data.append("token", Cookie.get("token"));
-    } else {
-      Cookie.delete("token");
-      store.dispatch("user/delToken");
-      router.push({ name: "login" });
-    }
-    axios.post(url, data, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      }
-    })
+      axios.post(url,data )
       .then(response => {
-        if (response.data.code == 30000 || response.data.code == 50000) {
-          Cookie.delete("token");
-          store.dispatch("user/delToken");
-          router.push({ name: "login" });
+         if (response.data.msg == 'token失效，请重新登录'){
+          router.push({name:"login"});
         }
-        if (response.data.code == 10000) {
+        if(response.data.code == 200){
           resolve(response.data.data)
-        } else {
+        }else{
           this.$message({
             message: response.data.msg,
             type: 'warning'
@@ -158,46 +114,35 @@ export function upload(url, data = {}) {
  * @param params
  * @returns {Promise}
  */
-export function exportExcel(url, data = {}, stringName = 'excel') {
+export function exportExcel (url, data={},stringName='excel') {
   return new Promise((resolve, reject) => {
-    if (Cookie.get("token")) {
-      data.token = Cookie.get("token")
-    } else {
-      Cookie.delete("token");
-      store.dispatch("user/delToken");
-      router.push({ name: "login" });
-    }
-    axios.post(url, data, { responseType: 'blob' })
+      axios.post(url,data,{responseType:'blob'})
       .then(response => {
-        if (response.data.code == 30000 || response.data.code == 50000) {
-          Cookie.delete("token");
-          store.dispatch("user/delToken");
-          router.push({ name: "login" });
-        }
-        let fileName = response.headers["content-disposition"].split(";")[1].split("=")[1];  //filename名称截取
-        if (window.navigator.msSaveBlob) {
-          window.navigator.msSaveBlob(response.data, fileName);
-        }
-        let url = window.URL.createObjectURL(response.data); //表示一个指定的file对象或Blob对象
-        let a = document.createElement("a");
-        document.body.appendChild(a);
-        a.href = url;
-        a.download = stringName + '_' + fileName; //命名下载名称
-        a.click(); //点击触发下载  
-        window.URL.revokeObjectURL(url);  //下载完成进行释放
-        document.body.removeChild(a)
+          let fileName=response.headers["content-disposition"].split(";")[1].split("=")[1];  //filename名称截取
+          if(window.navigator.msSaveBlob){
+            window.navigator.msSaveBlob(response.data,fileName);
+          }
+          let url = window.URL.createObjectURL(response.data); //表示一个指定的file对象或Blob对象
+          let a = document.createElement("a"); 
+          document.body.appendChild(a);
+          a.href = url;
+          a.download = stringName+'_'+fileName; //命名下载名称
+          a.click(); //点击触发下载  
+          window.URL.revokeObjectURL(url);  //下载完成进行释放
+          document.body.removeChild(a)
       })
       .catch(err => {
         console.log(err)
         reject(err)
-        if (window.navigator.msSaveBlob) {
+        if(window.navigator.msSaveBlob){
           window.console.log('IE')
-        } else {
+        }else{
           this.$message({
             message: '请求失败！请检查网络',
             type: 'warning'
           })
         }
+      
       })
   })
 }
@@ -207,35 +152,24 @@ export function exportExcel(url, data = {}, stringName = 'excel') {
  * @param params
  * @returns {Promise}
  */
-export function get(url, params = {}) {
+export function get (url, params = {}) {
   return new Promise((resolve, reject) => {
-    if (url != process.env.VUE_APP_URL + '/adminsystem/verificatioCode') {
-      if (Cookie.get("token")) {
-        params.token = Cookie.get("token")
-      } else {
-        Cookie.delete("token");
-        store.dispatch("user/delToken");
-        router.push({ name: "login" });
-      }
-    }
-    return axios.get(url, {
+    return  axios.get(url, {
       params: params
     })
-      .then(response => {
-        if (response.data.code == 30000 || response.data.code == 50000) {
-          Cookie.delete("token");
-          store.dispatch("user/delToken");
-          router.push({ name: "login" });
-        }
-        if (response.data.code == 10000) {
-          resolve(response.data.data)
-        } else {
-          this.$message({
-            message: response.data.msg,
-            type: 'warning'
-          })
-        }
-      })
+    .then(response => {
+      if (response.data.msg == 'token失效，请重新登录'){
+       router.push({name:"login"});
+     }
+     if(response.data.code ==200){
+       resolve(response.data.data)
+     }else{
+       this.$message({
+         message: response.data.msg,
+         type: 'warning'
+       })
+     }
+   })
       .catch(err => {
         console.log(err)
         reject(err)
@@ -254,46 +188,30 @@ export function get(url, params = {}) {
  * @returns {Promise}
  */
 
-export function post(url, data = {}) {
+export function post (url, data = {}) {
   return new Promise((resolve, reject) => {
-    if (url != process.env.VUE_APP_URL + '/adminsystem/login') {
-      if (Cookie.get("token")) {
-        data.token = Cookie.get("token")
-      } else {
-        Cookie.delete("token");
-        store.dispatch("user/delToken");
-        router.push({ name: "login" });
-      }
-    }
     axios.post(url, data)
-      .then(response => {
-        if (response.data.code == 30000 || response.data.code == 50000) {
-          Cookie.delete("token");
-          store.dispatch("user/delToken");
-          router.push({ name: "login" });
-        }
-        if (response.data.code == 10000) {
-          resolve(response.data.data)
-        }
-        //单独判断课程校验状态码
-        else if (response.data.code == 30022) {
-          resolve(response.data)
-        }
-        else {
-          this.$message({
-            message: response.data.msg,
-            type: 'warning'
-          })
-        }
+    .then(response => {
+      if (response.data.msg == 'token失效，请重新登录'){
+        router.push({name:"login"});
+     }
+     if(response.data.code ==200){
+       resolve(response.data.data)
+     }else{
+       this.$message({
+         message: response.data.msg,
+         type: 'warning'
+       })
+     }
+   })
+    .catch(err => {
+      console.log(err)
+      reject(err)
+      this.$message({
+        message: '请求失败！请检查网络',
+        type: 'warning'
       })
-      .catch(err => {
-        console.log(err)
-        reject(err)
-        this.$message({
-          message: '请求失败！请检查网络',
-          type: 'warning'
-        })
-      })
+    })
   })
 }
 
@@ -304,32 +222,30 @@ export function post(url, data = {}) {
  * @returns {Promise}
  */
 
-export function put(url, data = {}) {
-  return new Promise((resolve, reject) => {
-    axios.put(url, data)
-      .then(response => {
-        if (response.data.code == 30000 || response.data.code == 50000) {
-          Cookie.delete("token");
-          store.dispatch("user/delToken");
-          router.push({ name: "login" });
-        }
-        if (response.data.code == 10000) {
-          resolve(response.data.data)
-        } else {
-          this.$message({
-            message: response.data.msg,
-            type: 'warning'
-          })
-        }
+export function put(url,data = {}){
+  return new Promise((resolve,reject) => {
+    axios.put(url,data)
+    .then(response => {
+      if (response.data.msg == 'token失效，请重新登录'){
+        router.push({name:"login"});
+     }
+     if(response.data.code ==200){
+       resolve(response.data.data)
+     }else{
+       this.$message({
+         message: response.data.msg,
+         type: 'warning'
+       })
+     }
+   })
+    .catch(err => {
+      console.log(err)
+      reject(err)
+      this.$message({
+        message: '请求失败！请检查网络',
+        type: 'warning'
       })
-      .catch(err => {
-        console.log(err)
-        reject(err)
-        this.$message({
-          message: '请求失败！请检查网络',
-          type: 'warning'
-        })
-      })
+    })
   })
 }
 /**
@@ -338,32 +254,30 @@ export function put(url, data = {}) {
  * @param data
  * @returns {Promise}
  */
-export function del(url, data = {}) {
-  return new Promise((resolve, reject) => {
-    axios.delete(url, { data: data })
-      .then(response => {
-        if (response.data.code == 30000 || response.data.code == 50000) {
-          Cookie.delete("token");
-          store.dispatch("user/delToken");
-          router.push({ name: "login" });
-        }
-        if (response.data.code == 10000) {
-          resolve(response.data.data)
-        } else {
-          this.$message({
-            message: response.data.msg,
-            type: 'warning'
-          })
-        }
+export function del(url,data = {}){
+  return new Promise((resolve,reject) => {
+    axios.delete(url,{data:data})
+    .then(response => {
+      if (response.data.msg == 'token失效，请重新登录'){
+        router.push({name:"login"});
+     }
+     if(response.data.code ==200){
+       resolve(response.data.data)
+     }else{
+       this.$message({
+         message: response.data.msg,
+         type: 'warning'
+       })
+     }
+   })
+    .catch(err => {
+      console.log(err)
+      reject(err)
+      this.$message({
+        message: '请求失败！请检查网络',
+        type: 'warning'
       })
-      .catch(err => {
-        console.log(err)
-        reject(err)
-        this.$message({
-          message: '请求失败！请检查网络',
-          type: 'warning'
-        })
-      })
+    })
   })
 }
 

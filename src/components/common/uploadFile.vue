@@ -12,11 +12,10 @@
       :limit="1"
       :on-exceed="handleExceed"
       :file-list="fileList"
-       accept="application/pdf"
     >
       <el-button size="small" type="primary">点击上传</el-button>
       <!-- <div v-if="fileUrl">{{ fileUrl }}</div> -->
-      <div slot="tip" class="upload__tip">提示：只能上传pdf文件，且不超过5Mb</div>
+      <div slot="tip" class="el-upload__tip">只能上传pdf文件，且不超过5Mb</div>
     </el-upload>
   </div>
 </template>

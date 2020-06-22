@@ -1,5 +1,18 @@
-export const routes = state => state.routes
-export const opened = state => state.opened
-export const msgIsShow = state => state.msgIsShow
-export const userInfo = state => state.userInfo
-
+const getters = {
+  token: state => state.user.token,
+  userName: state => state.user.userName,
+  roles: state => state.user.roles,
+  introduce: state => state.user.introduce,
+  routes: state => state.permission.routes,
+  addRoutes: state => state.permission.addRoutes,
+  isFindRouter: state => state.permission.isFindRouter,
+  opened: state => {
+    if (state.app.opened === "false") {
+      return false;
+    } else if (state.app.opened === "true") {
+      return true;
+    }
+  },
+  msgIsShow: state => state.app.msgIsShow
+};
+export default getters;

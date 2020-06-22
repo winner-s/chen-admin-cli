@@ -1,34 +1,18 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import createPersistedState from 'vuex-persistedstate'
-import * as actions from './actions'
-import * as getters from './getters'
-import state from './state'
-import mutations from './mutations'
-// 每次修改state时，会在控制台输出
-import createLogger from 'vuex/dist/logger'
+import Vue from "vue";
+import Vuex from "vuex";
+import getters from "./getters";
+const path = require("path");
 
-Vue.use(Vuex)
-const createPersisted = createPersistedState({
-  storage: window.localStorage,
-  reducer: (store) => {
-    return {
-      routes: store.backStatus,
-      opened: store.opened,
-      msgIsShow:store.msgIsShow,
-      userInfo:store.userInfo
-    }
-  }
-})
+Vue.use(Vuex);
 
-// 线下调试的时候，开启debug,当运行build时，NODE_DNV是peoduction
-const debug = process.env.NODE_ENV !== 'production'
-
-export default new Vuex.Store({
-  actions,
-  getters,
-  state,
-  mutations,
-  strict: debug,
-  plugins: debug ? [createLogger(), createPersisted] : [createPersisted]
-})
+const files = require.context("./modules", false, /\.js$/);
+let modules = {};
+files.keys().forEach(key => {
+  let name = path.basename(key, ".js");
+  modules[name] = files(key).default || files(key);
+});
+const store = new Vuex.Store({
+  modules,
+  getters
+});
+export default store;

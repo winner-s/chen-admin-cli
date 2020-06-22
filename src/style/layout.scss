@@ -6,7 +6,7 @@
   .wrapper {
     @extend %width-height;
     position: relative;
-    background-color: #f0f3f4;
+    background-color: $bg-gary;
     .wrapper_con {
       height: calc(100% - 50px);
       width: 100%;
@@ -19,7 +19,7 @@
     transition: all 0.3s;
     height: 100%;
     & > div {
-      padding: 22px 20px;
+      padding: 36px 30px;
       background: $bg-gary;
     }
   }
@@ -66,7 +66,7 @@
   float: left;
   background-color: #3a3f51;
   box-sizing: border-box;
-  // border-bottom: 1px solid #454b61;
+  border-bottom: 1px solid #454b61;
   transition: width 0.3s;
   overflow: hidden;
 }
@@ -174,7 +174,7 @@
   width: 360px;
   box-shadow: -3px -3px 8px rgba(0, 0, 0, 0.2);
   background-color: $white;
-  z-index: 99;
+  z-index: 998;
 }
 // collapse
 #app {
@@ -219,32 +219,15 @@
     }
   }
 }
-// 覆盖loading
-.el-loading-mask.is-fullscreen {
-  z-index: 14000 !important;  //z-index设置。这里看情况
-}
-
-.my-el-custom-spinner {
-  // background: url("./assets/images/loading.gif");//这个图自己百度"loading gif"，肯定能找到
-  background-size: 40px 40px; //长宽自己设置
-  width: 40px;
-  height: 40px;
-  display: inline-block; 
-}
-.el-loading-spinner {
-  top: 40% !important;//这是控制loading位置的
-}
-/*elementui loading css 覆盖 结束*/
-
-// 图片放大的样式
-.vue-directive-image-previewer{
-  z-index:1000;
-}
-
-// 其他ui样式修改
+// 其他UI样式修改
 .operate-area{
   margin: 0 0 20px;
 }
+.el-dialog__footer,.dialog-footer {
+  text-align: center!important;
+  margin-top: 20px;
+}
+
 // 弹框标题
 .el-dialog__footer,.dialog-footer {
   text-align: center!important;
@@ -257,6 +240,7 @@
 .el-dialog .el-dialog__title{
   font-size: 16px;
 }
+
 // 弹框固定
 .abow_dialog {
   display: flex;
@@ -318,9 +302,4 @@
         background-color: rgba(0, 0, 0, .01);
       }
   }
-}
-
-// 上传信息提示
-.upload__tip{
-  color: #F56C6C;
 }

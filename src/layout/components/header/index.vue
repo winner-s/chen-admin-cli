@@ -1,7 +1,10 @@
 <template>
   <div class="header">
     <div class="header_l">
-      <div class="header_logo"></div>
+      <a href="javascript:;" class="logoLink">
+        <img src="./logo.png" alt="logo" />
+        后台管理系统</a
+      >
     </div>
     <div class="header_r">
       <div class="headr_d1">
@@ -10,17 +13,12 @@
       </div>
       <div class="headr_d2">
         <ul class="headrUl clearFixed">
-          <li id="reload">
-            <el-badge @click.native="reload">
-              <i class="el-icon-refresh iconFont" title="刷新"></i>
-            </el-badge>
-          </li>
-          <!-- <li id="domMessage">
+          <li id="domMessage">
             <el-badge is-dot @click.native="toggleMsgShow">
               <i class="el-icon-message-solid iconFont"></i>
             </el-badge>
-          </li> -->
-          <li id="domFullScreen" title="全屏">
+          </li>
+          <li id="domFullScreen">
             <full-screen></full-screen>
           </li>
           <li id="domPersonal">
@@ -47,22 +45,12 @@ export default {
   methods: {
     toggleMsgShow() {
       this.$store.commit("app/SET_MSGISOPEN");
-    },
-    reload() {
-      this.$router.go(0);
     }
   }
 };
 </script>
-<style scoped lang="scss">
+<style scoped>
 .logo-size {
   font-size: 32px;
-}
-.header_logo {
-  background: #5b6270;
-  width: 80%;
-  height: 40px;
-  margin: 10px auto 0;
-  border-radius: 5px;
 }
 </style>

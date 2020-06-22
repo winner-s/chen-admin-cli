@@ -1,5 +1,5 @@
 <template>
-  <span class="import-span">
+  <div>
     <input
       type="file"
       class="upFile"
@@ -7,10 +7,8 @@
       accept=".xlsx, .xls"
       @change="uploadFile"
     />
-    <el-button type="primary" @click="handleClick" size="mini">{{
-      importText
-    }}</el-button>
-  </span>
+    <el-button type="primary" @click="handleClick">导入</el-button>
+  </div>
 </template>
 
 <script>
@@ -18,11 +16,7 @@ import XLSX from "xlsx";
 export default {
   props: {
     breforeUpload: Function,
-    onSuccess: Function,
-    importText: {
-      type: String,
-      default: "导入"
-    }
+    onSuccess: Function
   },
   data() {
     return {
@@ -84,8 +78,5 @@ export default {
 <style lang="scss" scoped>
 .upFile {
   display: none;
-}
-.import-span {
-  margin: 0 10px;
 }
 </style>
